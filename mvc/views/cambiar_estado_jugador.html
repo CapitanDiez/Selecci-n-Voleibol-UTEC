@@ -1,0 +1,32 @@
+$def with (jugador, id_hash)
+
+<section class="encabezado">
+    <h1>ESTADO DEL JUGADOR</h1>
+    <span class="migas">Inicio › Jugadores › Estado</span>
+</section>
+<div class="banner"></div>
+
+<section class="contenido">
+    <article class="tarjeta mensaje">
+        $if jugador == []:
+            <h2>Jugador no encontrado</h2>
+            <a class="boton boton-blanco" href="/lista_jugadores">Regresar a la lista</a>
+        $else:
+            <div class="jugador">
+                <img src="/static/fotos/$jugador[0]['foto']" alt="Foto de $jugador[0]['nombre']">
+                <div><b>$jugador[0]['nombre']</b><small>Matrícula $jugador[0]['matricula']</small></div>
+            </div>
+            <p>Rama $jugador[0]['rama'] · Playera #$jugador[0]['numero_playera'] · Posición $jugador[0]['posicion']</p>
+
+            <form method="POST" action="/cambiar_estado_jugador/$id_hash">
+                $if jugador[0]['estado'] == 'activo':
+                    <p>Estado actual: <span class="etiqueta et-activo">Activo</span></p>
+                    <p>Al darlo de baja no se borra: conserva su historial de asistencias y partidos, y se puede reactivar después.</p>
+                    <button type="submit" class="boton boton-rojo">Dar de baja</button>
+                $else:
+                    <p>Estado actual: <span class="etiqueta et-baja">Baja</span></p>
+                    <button type="submit" class="boton boton-verde">Reactivar</button>
+                <a class="boton boton-blanco" href="/lista_jugadores">Cancelar</a>
+            </form>
+    </article>
+</section>

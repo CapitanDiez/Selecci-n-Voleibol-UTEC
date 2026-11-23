@@ -1,0 +1,19 @@
+$def with (jugador)
+
+<section class="encabezado">
+    <h1>ESTADO DEL JUGADOR</h1>
+    <span class="migas">Inicio › Jugadores › Estado</span>
+</section>
+<div class="banner"></div>
+
+<section class="contenido">
+    <article class="tarjeta mensaje">
+        $if jugador == []:
+            <h2>Jugador no encontrado</h2>
+        $elif jugador[0]['estado'] == 'baja':
+            <h2 class="texto-rojo">$jugador[0]['nombre'] fue dado de baja</h2>
+        $else:
+            <h2 class="texto-verde">$jugador[0]['nombre'] fue reactivado</h2>
+        <a class="boton boton-blanco" href="/lista_jugadores">Regresar a la lista</a>
+    </article>
+</section>

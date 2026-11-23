@@ -1,0 +1,21 @@
+$def with (jugador)
+
+<section class="encabezado">
+    <h1>AGREGAR JUGADOR</h1>
+    <span class="migas">Inicio › Jugadores › Agregar jugador</span>
+</section>
+<div class="banner"></div>
+
+<section class="contenido">
+    <article class="tarjeta mensaje">
+        <h2 class="texto-verde">Jugador insertado correctamente</h2>
+        <div class="jugador">
+            <img src="/static/fotos/$jugador[0]['foto']" alt="Foto de $jugador[0]['nombre']">
+            <div><b>$jugador[0]['nombre']</b><small>Matrícula $jugador[0]['matricula']</small></div>
+        </div>
+        <p>Rama $jugador[0]['rama'] · Playera #$jugador[0]['numero_playera'] · <span class="etiqueta et-activo">Activo</span></p>
+        <br>
+        <a class="boton boton-verde" href="/insertar_jugador">Agregar otro jugador</a>
+        <a class="boton boton-blanco" href="/lista_jugadores">Regresar a la lista</a>
+    </article>
+</section>

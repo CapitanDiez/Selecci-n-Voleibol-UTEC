@@ -1,0 +1,54 @@
+$def with (content)
+$ sesion = web.config.sesion
+$ rol = sesion.get('rol', '')
+$ nombre = sesion.get('nombre', '')
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Gestor de Voleibol - UTEC</title>
+        <link rel="stylesheet" href="/static/css/style.css">
+    </head>
+    <body>
+        <aside class="menu">
+            <div class="logo">
+                <div class="logo-caja">LOGO</div>
+                <div class="logo-texto"><b>UTEC</b><span>Voleibol</span></div>
+            </div>
+            <div class="menu-titulo">MENU</div>
+            <nav>
+                <a class="activo" href="/lista_jugadores">Jugadores</a>
+                $if rol == 'entrenador':
+                    <a href="#">Entrenamientos</a>
+                $if rol in ['entrenador', 'capitan']:
+                    <a href="#">Pase de lista</a>
+                $if rol == 'entrenador':
+                    <a href="#">Historial de asistencias</a>
+                $if rol in ['entrenador', 'capitan']:
+                    <a href="#">Partidos y torneos</a>
+                $if rol in ['entrenador', 'coordinacion']:
+                    <a href="#">Reportes</a>
+            </nav>
+            <a class="salir" href="/cerrar_sesion">Cerrar sesión</a>
+        </aside>
+
+        <header class="barra">
+            <div class="usuario">
+                <div class="avatar">$nombre[:2].upper()</div>
+                <div><b>$nombre.upper()</b><small>$rol</small></div>
+            </div>
+        </header>
+
+        <main class="principal">
+            $:content
+        </main>
+
+        <footer class="pie">
+            <span>2026</span>
+            <span>Gestor de Voleibol · <b>UTec Tulancingo</b></span>
+        </footer>
+
+        <script src="/static/js/script.js"></script>
+    </body>
+</html>

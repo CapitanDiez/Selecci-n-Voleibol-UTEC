@@ -1,0 +1,17 @@
+$ sesion = web.config.sesion
+
+<section class="encabezado">
+    <h1>BIENVENIDO</h1>
+    <span class="migas">Inicio</span>
+</section>
+<div class="banner"></div>
+
+<section class="contenido">
+    <article class="tarjeta mensaje">
+        <h2>Hola, $sesion.get('nombre', '')</h2>
+        <p>Entraste como <b>$sesion.get('rol', '')</b>. Desde el menú de la izquierda puedes ir a las secciones de tu rol.</p>
+        <br>
+        <a class="boton boton-verde" href="/lista_jugadores">Ver lista de jugadores</a>
+        <a class="boton boton-blanco" href="/cerrar_sesion">Cerrar sesión</a>
+    </article>
+</section>

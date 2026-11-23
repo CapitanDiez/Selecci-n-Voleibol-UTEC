@@ -1,0 +1,137 @@
+$def with (datos, errores, carreras, posiciones)
+
+<section class="encabezado">
+    <h1>AGREGAR JUGADOR</h1>
+    <span class="migas">Inicio › Jugadores › Agregar jugador</span>
+</section>
+<div class="banner"></div>
+
+<section class="contenido">
+    <div class="columnas">
+        <aside>
+            <article class="tarjeta previa">
+                <img id="previa-foto" class="foto-previa" src="/static/fotos/default.png" alt="Vista previa de la foto">
+                <h3 id="previa-nombre">NUEVO JUGADOR</h3>
+                <p>Vista previa</p>
+                <div class="previa-datos">
+                    <div><b id="previa-matricula">———</b><small>MATRÍCULA</small></div>
+                    <div><b id="previa-rama">—</b><small>RAMA</small></div>
+                    <div><b>#<span id="previa-numero">00</span></b><small>PLAYERA</small></div>
+                    <div><b class="texto-verde">ACTIVO</b><small>ESTADO</small></div>
+                </div>
+            </article>
+
+            <article class="tarjeta reglas">
+                <h4>Reglas de registro</h4>
+                <ul>
+                    <li>Todos los campos con * son obligatorios.</li>
+                    <li>La matrícula no puede estar registrada.</li>
+                    <li>El número de playera no se repite en la misma rama.</li>
+                    <li>El jugador se guarda con estado activo.</li>
+                    <li>Foto opcional: .jpg, .jpeg, .png o .webp.</li>
+                </ul>
+            </article>
+        </aside>
+
+        <article class="tarjeta datos">
+            <h4>DATOS DEL JUGADOR</h4>
+            <form id="form-jugador" class="formulario" name="jugador" method="POST" action="/insertar_jugador" enctype="multipart/form-data">
+                $for error in errores:
+                    <div class="error">$error</div>
+
+                <div class="fila dos">
+                    <div>
+                        <label for="nombre">Nombre completo *</label>
+                        <input type="text" name="nombre" id="nombre" placeholder="Nombre(s) y apellidos" value="$datos.get('nombre', '')" required>
+                    </div>
+                    <div>
+                        <label for="matricula">Matrícula *</label>
+                        <input type="text" name="matricula" id="matricula" placeholder="10 dígitos" maxlength="10" pattern="[0-9]{10}" value="$datos.get('matricula', '')" required>
+                    </div>
+                </div>
+
+                <div class="fila dos">
+                    <div>
+                        <label for="correo">Correo institucional *</label>
+                        <input type="email" name="correo" id="correo" placeholder="matricula@utectulancingo.edu.mx" value="$datos.get('correo', '')" required>
+                    </div>
+                    <div>
+                        <label for="telefono">Teléfono</label>
+                        <input type="tel" name="telefono" id="telefono" placeholder="10 dígitos" maxlength="10" value="$(datos.get('telefono') or '')">
+                    </div>
+                </div>
+
+                <div class="fila tres">
+                    <div>
+                        <label for="edad">Edad *</label>
+                        <input type="number" name="edad" id="edad" placeholder="Ej. 19" min="15" max="60" value="$datos.get('edad', '')" required>
+                    </div>
+                    <div>
+                        <label for="cuatrimestre">Cuatrimestre *</label>
+                        <select name="cuatrimestre" id="cuatrimestre" required>
+                            <option value="">Selecciona</option>
+                            $for n in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']:
+                                $if n == datos.get('cuatrimestre', ''):
+                                    <option value="$n" selected>$(n)°</option>
+                                $else:
+                                    <option value="$n">$(n)°</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="carrera">Carrera *</label>
+                        <select name="carrera" id="carrera" required>
+                            <option value="">Selecciona</option>
+                            $for carrera in carreras:
+                                $if carrera == datos.get('carrera', ''):
+                                    <option value="$carrera" selected>$carrera</option>
+                                $else:
+                                    <option value="$carrera">$carrera</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="fila tres">
+                    <div>
+                        <label for="rama">Rama *</label>
+                        <select name="rama" id="rama" required>
+                            <option value="">Selecciona</option>
+                            $for valor, texto in [('femenil', 'Femenil'), ('varonil', 'Varonil')]:
+                                $if valor == datos.get('rama', ''):
+                                    <option value="$valor" selected>$texto</option>
+                                $else:
+                                    <option value="$valor">$texto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="posicion">Posición *</label>
+                        <select name="posicion" id="posicion" required>
+                            <option value="">Selecciona</option>
+                            $for valor, texto in posiciones:
+                                $if valor == datos.get('posicion', ''):
+                                    <option value="$valor" selected>$texto</option>
+                                $else:
+                                    <option value="$valor">$texto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="numero_playera">Número de playera *</label>
+                        <input type="number" name="numero_playera" id="numero_playera" placeholder="Ej. 7" min="0" max="99" value="$datos.get('numero_playera', '')" required>
+                    </div>
+                </div>
+
+                <div class="fila">
+                    <div>
+                        <label for="foto">Foto</label>
+                        <input type="file" name="foto" id="foto" accept=".jpg,.jpeg,.png,.webp">
+                    </div>
+                </div>
+
+                <div class="acciones">
+                    <small>* Campos obligatorios</small>
+                    <a class="boton boton-blanco" href="/lista_jugadores">Cancelar</a>
+                    <button type="submit" class="boton boton-verde">Guardar jugador</button>
+                </div>
+            </form>
+        </article>
+    </div>
+</section>

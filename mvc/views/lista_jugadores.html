@@ -1,0 +1,112 @@
+$def with (lista, datos, filtros)
+$ rol = web.config.sesion.get('rol', '')
+
+<section class="encabezado">
+    <h1>PLANTILLA DE JUGADORES</h1>
+    <span class="migas">Inicio › Jugadores</span>
+</section>
+<div class="banner"></div>
+
+<section class="contenido">
+    <div class="tarjetas">
+        <article class="tarjeta dato">
+            <small>Jugadores activos</small>
+            <p><b class="azul">$datos['activos']</b>de $datos['total'] registrados</p>
+        </article>
+        <article class="tarjeta dato">
+            <small>Rama $filtros.rama</small>
+            <p><b class="verde">$datos['activos_rama']</b>activos</p>
+        </article>
+        <article class="tarjeta dato">
+            <small>Asistencia</small>
+            <p><b class="azul">$datos['promedio']%</b>promedio</p>
+        </article>
+        <article class="tarjeta dato">
+            <small>Posible baja</small>
+            <p><b class="naranja">$datos['posibles_bajas']</b>sin asistir 3 semanas</p>
+        </article>
+    </div>
+
+    <article class="tarjeta">
+        <form class="filtros" method="GET" action="/lista_jugadores">
+            <input type="hidden" name="rama" value="$filtros.rama">
+            <input type="hidden" name="estado" value="$filtros.estado">
+            <input type="search" name="buscar" value="$filtros.buscar" placeholder="Buscar por nombre o matrícula">
+
+            <div class="grupo">
+                $for valor, texto in [('femenil', 'Femenil'), ('varonil', 'Varonil')]:
+                    $if filtros.rama == valor:
+                        <a class="sel" href="/lista_jugadores?rama=$valor&estado=$filtros.estado">$texto</a>
+                    $else:
+                        <a href="/lista_jugadores?rama=$valor&estado=$filtros.estado">$texto</a>
+            </div>
+
+            <div class="grupo">
+                $for valor, texto in [('todos', 'Todos'), ('activos', 'Activos'), ('posible_baja', 'Posible baja'), ('baja', 'Baja')]:
+                    $if filtros.estado == valor:
+                        <a class="sel" href="/lista_jugadores?rama=$filtros.rama&estado=$valor">$texto</a>
+                    $else:
+                        <a href="/lista_jugadores?rama=$filtros.rama&estado=$valor">$texto</a>
+            </div>
+
+            $if rol in ['entrenador', 'capitan']:
+                <a class="boton boton-verde" href="/insertar_jugador">+ Agregar jugador</a>
+        </form>
+
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>JUGADOR</th>
+                    <th>CARRERA</th>
+                    <th>CUATRI.</th>
+                    <th>POSICIÓN</th>
+                    <th>NÚM.</th>
+                    <th>ASISTENCIA</th>
+                    <th>ESTADO</th>
+                    $if rol == 'entrenador':
+                        <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                $for jugador in lista:
+                    <tr>
+                        <td>
+                            <div class="jugador">
+                                <img src="/static/fotos/$jugador['foto']" alt="Foto de $jugador['nombre']">
+                                <div><b>$jugador['nombre']</b><small>$jugador['matricula']</small></div>
+                            </div>
+                        </td>
+                        <td>$jugador['carrera']</td>
+                        <td>$jugador['cuatrimestre']°</td>
+                        <td>$jugador['posicion'].capitalize()</td>
+                        <td class="numero">#$jugador['numero_playera']</td>
+                        <td>
+                            $if jugador['porcentaje'] >= 60:
+                                <span class="barra-asist"><span style="width: $jugador['porcentaje']%;"></span></span>
+                            $else:
+                                <span class="barra-asist"><span class="baja" style="width: $jugador['porcentaje']%;"></span></span>
+                            <b>$jugador['porcentaje']%</b>
+                        </td>
+                        <td>
+                            $if jugador['situacion'] == 'activo':
+                                <span class="etiqueta et-activo">Activo</span>
+                            $elif jugador['situacion'] == 'posible baja':
+                                <span class="etiqueta et-posible">Posible baja</span>
+                            $else:
+                                <span class="etiqueta et-baja">Baja</span>
+                        </td>
+                        $if rol == 'entrenador':
+                            <td>
+                                $if jugador['estado'] == 'activo':
+                                    <a class="accion texto-rojo" href="/cambiar_estado_jugador/$jugador['id_hash']">Dar de baja</a>
+                                $else:
+                                    <a class="accion texto-verde" href="/cambiar_estado_jugador/$jugador['id_hash']">Reactivar</a>
+                            </td>
+                    </tr>
+            </tbody>
+        </table>
+
+        $if lista == []:
+            <p class="vacio">No hay jugadores con estos filtros.</p>
+    </article>
+</section>
