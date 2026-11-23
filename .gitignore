@@ -1,6 +1,7 @@
 *.pyc
-__pycache__/
-.venv
 .env
-temporal/
+.venv
+.venv/
+__pycache__/
 sesiones/
+temporal/
