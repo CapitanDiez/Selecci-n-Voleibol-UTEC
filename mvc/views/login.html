@@ -1,4 +1,4 @@
-$def with (mensaje)
+$def with (mensaje, tipo)
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -32,8 +32,10 @@ $def with (mensaje)
 
                     <button type="submit" class="boton boton-verde">Iniciar sesión</button>
 
-                    $if mensaje != "":
+                    $if tipo == "error":
                         <div class="error">$mensaje</div>
+                    $elif tipo == "aviso":
+                        <div class="aviso">$mensaje</div>
 
                     <div class="roles">Roles:<span>Entrenador</span><span>Capitán</span><span>Coordinación</span></div>
                 </form>

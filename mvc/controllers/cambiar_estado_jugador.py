@@ -1,10 +1,11 @@
 import web
 import logging
-from mvc.models.model_sesiones import ModelSesiones
+from mvc.models.auth_users import AuthUsers
 from mvc.models.model_jugadores import ModelJugadores
 
 logger = logging.getLogger(__name__)
 
+render_login = web.template.render("mvc/views")
 render = web.template.render("mvc/views", base="template", globals={"web": web})
 
 # RF-12 y RF-20: solo el entrenador da de baja o reactiva
@@ -15,11 +16,11 @@ class CambiarEstadoJugador:
     """RF-12: dar de baja o reactivar a un jugador sin borrar su historial."""
 
     def GET(self, id_hash: str):
-        model_sesiones = ModelSesiones()
-        if not model_sesiones.sesionValida():
-            raise web.seeother("/login")
-        if not model_sesiones.tieneRol(ROLES):
-            raise web.seeother("/lista_jugadores")
+        auth_users = AuthUsers()
+        if not auth_users.sesionValida():
+            return render_login.login("Inicie sesión para continuar", "error")  # type: ignore
+        if not auth_users.tieneRol(ROLES):
+            return render.sin_permiso()  # type: ignore
 
         try:
             # Si el HASH fue alterado, buscarJugador regresa []
@@ -32,11 +33,11 @@ class CambiarEstadoJugador:
         return render.cambiar_estado_jugador(jugador, id_hash)  # type: ignore
 
     def POST(self, id_hash: str):
-        model_sesiones = ModelSesiones()
-        if not model_sesiones.sesionValida():
-            raise web.seeother("/login")
-        if not model_sesiones.tieneRol(ROLES):
-            raise web.seeother("/lista_jugadores")
+        auth_users = AuthUsers()
+        if not auth_users.sesionValida():
+            return render_login.login("Inicie sesión para continuar", "error")  # type: ignore
+        if not auth_users.tieneRol(ROLES):
+            return render.sin_permiso()  # type: ignore
 
         try:
             model_jugadores = ModelJugadores()

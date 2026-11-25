@@ -1,11 +1,12 @@
 import web
 import logging
 from typing import Any
-from mvc.models.model_sesiones import ModelSesiones
+from mvc.models.auth_users import AuthUsers
 from mvc.models.model_jugadores import ModelJugadores
 
 logger = logging.getLogger(__name__)
 
+render_login = web.template.render("mvc/views")
 render = web.template.render("mvc/views", base="template", globals={"web": web})
 
 
@@ -14,8 +15,8 @@ class ListaJugadores:
 
     def GET(self):
         # RNT01: valida la sesión antes de ejecutar
-        if not ModelSesiones().sesionValida():
-            raise web.seeother("/login")
+        if not AuthUsers().sesionValida():
+            return render_login.login("Inicie sesión para continuar", "error")  # type: ignore
 
         # Filtros que llegan por la URL; si no vienen, usa estos valores
         filtros = web.input(rama="femenil", estado="todos", buscar="")

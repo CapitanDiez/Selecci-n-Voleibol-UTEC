@@ -1,18 +1,19 @@
 import web
 import logging
-from mvc.models.model_sesiones import ModelSesiones
+from mvc.models.auth_users import AuthUsers
 
 logger = logging.getLogger(__name__)
 
 # El login no usa template.html porque no lleva menú lateral
-render = web.template.render("mvc/views")
+render_login = web.template.render("mvc/views")
+render = web.template.render("mvc/views", base="template", globals={"web": web})
 
 
 class Login:
     """RF-01: inicio de sesión con Supabase Authentication."""
 
     def GET(self):
-        return render.login("")  # type: ignore
+        return render_login.login("", "")  # type: ignore
 
     def POST(self):
         formulario = web.input(email="", password="")
@@ -20,20 +21,20 @@ class Login:
         password: str = formulario.password
 
         try:
-            model_sesiones = ModelSesiones()
+            auth_users = AuthUsers()
 
             # 1. Valida email y contraseña en Supabase Authentication
-            token = model_sesiones.iniciarSesion(email, password)
+            token = auth_users.iniciarSesion(email, password)
             if token is None:
-                return render.login("Credenciales incorrectas, verifique sus datos")  # type: ignore
+                return render_login.login("Credenciales incorrectas, verifique sus datos", "error")  # type: ignore
 
             # 2. Revisa que esté activo en la tabla usuarios y obtiene su rol
-            usuario = model_sesiones.obtenerUsuario(email)
+            usuario = auth_users.obtenerUsuario(email)
             if usuario == []:
-                return render.login("Su usuario no tiene acceso al sistema")  # type: ignore
+                return render_login.login("Su usuario no tiene acceso al sistema", "error")  # type: ignore
 
             # 3. Registra el token en sesiones_abiertas y lo guarda en la sesión local
-            model_sesiones.registrarToken(token)
+            auth_users.registrarToken(token)
             sesion = web.config.sesion
             sesion.token = token
             sesion.email = email
@@ -43,7 +44,7 @@ class Login:
         except Exception as error:
             logger.error("ERROR 501: %s", error)
             print(f"ERROR 501: {str(error)}")
-            return render.login("No se pudo iniciar sesión, intente de nuevo")  # type: ignore
+            return render_login.login("No se pudo iniciar sesión, intente de nuevo", "error")  # type: ignore
 
-        # 4. Redirige a la página de bienvenida
-        raise web.seeother("/")
+        # 4. Muestra la página de bienvenida
+        return render.index()  # type: ignore

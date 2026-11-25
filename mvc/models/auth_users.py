@@ -12,8 +12,9 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-class ModelSesiones:
-    """Autenticación (RF-01), roles (RF-20) y validación de sesiones (RNT01)."""
+class AuthUsers:
+    """Autenticación (RF-01), roles (RF-20) y validación de sesiones (RNT01).
+    Basado en mvc/models/auth_users.py del repositorio del profesor."""
 
     def __init__(self) -> None:
         try:
@@ -40,6 +41,20 @@ class ModelSesiones:
             print(f"ERROR 101: {str(error)}")
             return None
 
+    def registrarUsuario(self, email: str, password: str) -> str | None:
+        try:
+            response = self.supabase.auth.sign_up(
+                {
+                    "email": email,
+                    "password": password
+                }
+            )
+            return response.user.id  # type: ignore
+        except Exception as error:
+            logger.error("ERROR 102: %s", error)
+            print(f"ERROR 102: {str(error)}")
+            return None
+
     def obtenerUsuario(self, email: str) -> list[dict[str, Any]]:
         """RF-01: solo entra si el usuario está activo y tiene un rol permitido."""
         try:
@@ -47,8 +62,8 @@ class ModelSesiones:
             response = self.supabase.table("usuarios").select("*").eq("email", email).eq("activo", True).execute()
             return response.data  # type: ignore
         except Exception as error:
-            logger.error("ERROR 102: %s", error)
-            print(f"ERROR 102: {str(error)}")
+            logger.error("ERROR 103: %s", error)
+            print(f"ERROR 103: {str(error)}")
             return []
 
     def registrarToken(self, token: str) -> bool:
@@ -58,8 +73,8 @@ class ModelSesiones:
             self.supabase.table("sesiones_abiertas").insert({"token": token}).execute()
             return True
         except Exception as error:
-            logger.error("ERROR 103: %s", error)
-            print(f"ERROR 103: {str(error)}")
+            logger.error("ERROR 104: %s", error)
+            print(f"ERROR 104: {str(error)}")
             return False
 
     def validarToken(self, token: str) -> bool:
@@ -69,8 +84,8 @@ class ModelSesiones:
             response = self.supabase.table("sesiones_abiertas").select("*").eq("token", token).execute()
             return response.data != []
         except Exception as error:
-            logger.error("ERROR 104: %s", error)
-            print(f"ERROR 104: {str(error)}")
+            logger.error("ERROR 105: %s", error)
+            print(f"ERROR 105: {str(error)}")
             return False
 
     def eliminarToken(self, token: str) -> bool:
@@ -80,8 +95,8 @@ class ModelSesiones:
             self.supabase.table("sesiones_abiertas").delete().eq("token", token).execute()
             return True
         except Exception as error:
-            logger.error("ERROR 105: %s", error)
-            print(f"ERROR 105: {str(error)}")
+            logger.error("ERROR 106: %s", error)
+            print(f"ERROR 106: {str(error)}")
             return False
 
     def sesionValida(self) -> bool:
@@ -95,8 +110,8 @@ class ModelSesiones:
                 return False
             return self.validarToken(token)
         except Exception as error:
-            logger.error("ERROR 106: %s", error)
-            print(f"ERROR 106: {str(error)}")
+            logger.error("ERROR 107: %s", error)
+            print(f"ERROR 107: {str(error)}")
             return False
 
     def tieneRol(self, roles: list[str]) -> bool:
@@ -104,11 +119,11 @@ class ModelSesiones:
         try:
             return web.config.sesion.get("rol", "") in roles
         except Exception as error:
-            logger.error("ERROR 107: %s", error)
-            print(f"ERROR 107: {str(error)}")
+            logger.error("ERROR 108: %s", error)
+            print(f"ERROR 108: {str(error)}")
             return False
 
 
 if __name__ == "__main__":
-    objeto = ModelSesiones()
+    objeto = AuthUsers()
     print(objeto.iniciarSesion("felix@utectulancingo.edu.mx", "cambiar123"))

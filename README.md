@@ -41,24 +41,25 @@ Crea un `.env` con `SUPABASE_URL` y `SUPABASE_KEY`.
 
 ## 4. Para el resto del equipo
 
-Cada controlador privado debe empezar así (RNT01 y RF-20):
+Cada controlador privado debe empezar así (RNT01 y RF-20). Igual que en el repo del profe,
+no se usan redirecciones: si no hay sesión se muestra el login, y si el rol no tiene permiso
+se muestra `sin_permiso.html`.
 
 ```python
-from mvc.models.model_sesiones import ModelSesiones
+from mvc.models.auth_users import AuthUsers
+
+render_login = web.template.render("mvc/views")
+render = web.template.render("mvc/views", base="template", globals={"web": web})
 
 def GET(self):
-    model_sesiones = ModelSesiones()
-    if not model_sesiones.sesionValida():
-        raise web.seeother("/login")
-    if not model_sesiones.tieneRol(["entrenador"]):   # roles que pueden entrar
-        raise web.seeother("/")
+    auth_users = AuthUsers()
+    if not auth_users.sesionValida():
+        return render_login.login("Inicie sesión para continuar", "error")
+    if not auth_users.tieneRol(["entrenador"]):   # roles que pueden entrar
+        return render.sin_permiso()
 ```
 
-Y crear su `render` así, para que el menú y el usuario de `template.html` funcionen:
-
-```python
-render = web.template.render("mvc/views", base="template", globals={"web": web})
-```
+El `globals={"web": web}` es para que el menú y el usuario de `template.html` funcionen.
 
 Para firmar ids en la URL, usar `generarHash` / `validarHash` (como en `model_jugadores.py`).
 

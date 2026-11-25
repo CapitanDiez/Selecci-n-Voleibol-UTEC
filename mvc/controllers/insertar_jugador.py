@@ -1,12 +1,13 @@
 import web
 import logging
 from typing import Any
-from mvc.models.model_sesiones import ModelSesiones
+from mvc.models.auth_users import AuthUsers
 from mvc.models.model_jugadores import ModelJugadores
 from mvc.models.model_fotos import ModelFotos, FOTO_DEFAULT
 
 logger = logging.getLogger(__name__)
 
+render_login = web.template.render("mvc/views")
 render = web.template.render("mvc/views", base="template", globals={"web": web})
 
 # Opciones de los <select> del formulario
@@ -39,20 +40,20 @@ class InsertarJugador:
 
     def GET(self):
         # RNT01: valida la sesión antes de ejecutar
-        model_sesiones = ModelSesiones()
-        if not model_sesiones.sesionValida():
-            raise web.seeother("/login")
-        if not model_sesiones.tieneRol(ROLES):
-            raise web.seeother("/lista_jugadores")
+        auth_users = AuthUsers()
+        if not auth_users.sesionValida():
+            return render_login.login("Inicie sesión para continuar", "error")  # type: ignore
+        if not auth_users.tieneRol(ROLES):
+            return render.sin_permiso()  # type: ignore
 
         return render.insertar_jugador({}, [], CARRERAS, POSICIONES)  # type: ignore
 
     def POST(self):
-        model_sesiones = ModelSesiones()
-        if not model_sesiones.sesionValida():
-            raise web.seeother("/login")
-        if not model_sesiones.tieneRol(ROLES):
-            raise web.seeother("/lista_jugadores")
+        auth_users = AuthUsers()
+        if not auth_users.sesionValida():
+            return render_login.login("Inicie sesión para continuar", "error")  # type: ignore
+        if not auth_users.tieneRol(ROLES):
+            return render.sin_permiso()  # type: ignore
 
         # foto={} hace que web.py entregue el archivo completo
         formulario = web.input(foto={})

@@ -1,8 +1,10 @@
 import web
 import logging
-from mvc.models.model_sesiones import ModelSesiones
+from mvc.models.auth_users import AuthUsers
 
 logger = logging.getLogger(__name__)
+
+render_login = web.template.render("mvc/views")
 
 
 class CerrarSesion:
@@ -15,7 +17,7 @@ class CerrarSesion:
 
             # 1. Elimina el token de sesiones_abiertas
             if token != "":
-                ModelSesiones().eliminarToken(token)
+                AuthUsers().eliminarToken(token)
                 logger.info("Cierre de sesión: %s", sesion.get("email", ""))
 
             # 2. Destruye la sesión local
@@ -24,5 +26,5 @@ class CerrarSesion:
             logger.error("ERROR 502: %s", error)
             print(f"ERROR 502: {str(error)}")
 
-        # 3. Regresa a login
-        raise web.seeother("/login")
+        # 3. Muestra el login
+        return render_login.login("Sesión cerrada correctamente", "aviso")  # type: ignore
